@@ -1,0 +1,37 @@
+{
+  "configurations" : [
+    {
+      "id" : "0549FBEE-3437-46B8-8D72-0FCC75DACC17",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "codeCoverage" : false,
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:ZupanCommandRecognition.xcodeproj",
+      "identifier" : "419094762A8E0A13002B5A73",
+      "name" : "ZupanCommandRecognition"
+    }
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:ZupanCommandRecognition.xcodeproj",
+        "identifier" : "419094862A8E0A14002B5A73",
+        "name" : "ZupanCommandRecognitionTests"
+      }
+    },
+    {
+      "enabled" : false,
+      "target" : {
+        "containerPath" : "container:ZupanCommandRecognition.xcodeproj",
+        "identifier" : "419094902A8E0A14002B5A73",
+        "name" : "ZupanCommandRecognitionUITests"
+      }
+    }
+  ],
+  "version" : 1
+}

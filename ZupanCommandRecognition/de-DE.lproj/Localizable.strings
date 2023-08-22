@@ -1,0 +1,16 @@
+/* 
+  Localizable.strings
+  ZupanCommandRecognition
+
+  Created by Luka Gabric on 21.08.2023..
+  
+*/
+
+"commandRecognitionView.type" = "Typ";
+"commandRecognitionView.value" = "Wert";
+"commandRecognitionView.toggleLocale" = "Gebietsschema umschalten";
+"commandRecognitionView.locale" = "Gebietsschema:";
+"commandRecognitionView.observing" = "Beobachten:";
+"commandRecognitionView.recognizedText" = "Erkannter Text:";
+"commandRecognitionView.command" = "Befehl";
+"commandRecognitionView.parameters" = "Parameter";
