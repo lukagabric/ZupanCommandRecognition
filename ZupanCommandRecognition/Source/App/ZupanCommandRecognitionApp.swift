@@ -13,21 +13,23 @@ struct ZupanCommandRecognitionApp: App {
     private static var viewModel: SpeechRecognitionViewModel = {
 #if DEBUG
         if let uiTestsMockInput = UITestsArguments.uiTestsMockInput {
-            return SpeechRecognitionViewModel { locale in
-                try! FixedInputSpeechRecognizer(locale: Locale(identifier: "en-US"), mockInput: uiTestsMockInput)
-            }
+            return SpeechRecognitionViewModel(
+                localizationServiceFactory: { DefaultLocalizationService(localeId: $0)},
+                speechRecognizerFactory: { _ in try! FixedInputSpeechRecognizer(locale: Locale(identifier: "en-US"), mockInput: uiTestsMockInput) }
+            )
         } else if ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1" ||
                     ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil ||
                     ProcessInfo.processInfo.environment["SIMULATOR_UDID"] != nil {
-            return SpeechRecognitionViewModel { locale in
-                try! MockSpeechRecognizer(locale: locale)
-            }
+            return SpeechRecognitionViewModel(
+                localizationServiceFactory: { DefaultLocalizationService(localeId: $0)},
+                speechRecognizerFactory: { try! MockSpeechRecognizer(locale: $0) }
+            )
         }
 #endif
-        
-        return SpeechRecognitionViewModel { locale in
-            try! IOSSpeechRecognizer(locale: locale)
-        }
+        return SpeechRecognitionViewModel(
+            localizationServiceFactory: { DefaultLocalizationService(localeId: $0)},
+            speechRecognizerFactory: { try! IOSSpeechRecognizer(locale: $0) }
+        )
     }()
     
     var body: some Scene {

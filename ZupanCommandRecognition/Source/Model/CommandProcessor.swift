@@ -23,15 +23,15 @@ struct CommandProcessor {
     
     //MARK: - Processing
     
-    func process(input: String, localeId: String) -> [Command] {
+    func process(input: String, localizationService: LocalizationService) -> [Command] {
         let inputComponents = input.components(separatedBy: " ").map { $0.lowercased() }
         
         var commands = [Command]()
         var currentCommand: Command?
         
         for inputComponent in inputComponents {
-            if let commandType = Command.CommandType(rawValue: inputComponent) {
-                let newCommand = Command(commandType: commandType, localeId: localeId)
+            if let commandType = Command.CommandType.commandType(from: inputComponent, localizationService: localizationService) {
+                let newCommand = Command(commandType: commandType, localizationService: localizationService)
                 
                 let currentState = CommandBehaviorInput(newCommand: newCommand,
                                                         currentCommand: currentCommand,

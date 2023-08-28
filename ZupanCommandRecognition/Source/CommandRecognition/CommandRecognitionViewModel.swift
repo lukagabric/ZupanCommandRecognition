@@ -22,10 +22,14 @@ class SpeechRecognitionViewModel: ObservableObject {
     private let commandProcessor = CommandProcessor()
     
     private var currentInput: String?
-    private var bundle: Bundle
     
     typealias SpeechRecognizerFactory = (_ locale: Locale) throws -> SpeechRecognizer
     private let speechRecognizerFactory: SpeechRecognizerFactory
+    
+    typealias LocalizationServiceFactory = (_ localeId: String) -> LocalizationService
+    private let localizationServiceFactory: LocalizationServiceFactory
+    
+    private var localizationService: LocalizationService
 
     @Published private(set) var toggleLocaleTitle = ""
     @Published private(set) var localeTitle = ""
@@ -38,12 +42,14 @@ class SpeechRecognitionViewModel: ObservableObject {
     
     //MARK: - Init
     
-    init(speechRecognizerFactory: @escaping SpeechRecognizerFactory) {
+    init(localizationServiceFactory: @escaping LocalizationServiceFactory,
+         speechRecognizerFactory: @escaping SpeechRecognizerFactory) {
         self.speechRecognizerFactory = speechRecognizerFactory
+        self.localizationServiceFactory = localizationServiceFactory
         let localeIdentifier = "en-US"
+        localizationService = localizationServiceFactory(localeIdentifier)
         locale = Locale(identifier: localeIdentifier)
         self.localeIdentifier = localeIdentifier
-        bundle = Self.loadBundle(localeIdentifier: localeIdentifier)
         updateStrings()
     }
     
@@ -95,18 +101,18 @@ class SpeechRecognitionViewModel: ObservableObject {
         commandProcessor.commandProcessingState
             .map { [weak self] type in
                 let key = type == .command ? "commandRecognitionView.command" : "commandRecognitionView.parameters"
-                return self?.localization(for: key) ?? ""
+                return self?.localizationService.localization(for: key) ?? ""
             }
             .receive(on: DispatchQueue.main)
             .assign(to: &$statusMessage)
     }
     
     private func process(input: String) {
-        let typeTitle = localization(for: "commandRecognitionView.type")
-        let valueTitle = localization(for: "commandRecognitionView.value")
-        commandListItems = commandProcessor.process(input: input, localeId: locale.identifier)
+        let typeTitle = localizationService.localization(for: "commandRecognitionView.type")
+        let valueTitle = localizationService.localization(for: "commandRecognitionView.value")
+        commandListItems = commandProcessor.process(input: input, localizationService: localizationService)
             .map { command in
-                let type = command.commandType.rawValue
+                let type = command.commandType.localizedString(localizationService: localizationService)
                 let value = command.parameters
                     .map(String.init)
                     .joined()
@@ -136,19 +142,15 @@ class SpeechRecognitionViewModel: ObservableObject {
     }
     
     private func didUpdateLocale() {
+        localizationService = localizationServiceFactory(locale.identifier)
         localeIdentifier = locale.identifier
-        bundle = Self.loadBundle(localeIdentifier: localeIdentifier)
         updateStrings()
     }
     
     private func updateStrings() {
-        toggleLocaleTitle = localization(for: "commandRecognitionView.toggleLocale")
-        localeTitle = localization(for: "commandRecognitionView.locale")
-        observingTitle = localization(for: "commandRecognitionView.observing")
-        recognizedTextTitle = localization(for: "commandRecognitionView.recognizedText")
-    }
-    
-    private func localization(for key: String) -> String {
-        bundle.localizedString(forKey: key, value: nil, table: nil)
+        toggleLocaleTitle = localizationService.localization(for: "commandRecognitionView.toggleLocale")
+        localeTitle = localizationService.localization(for: "commandRecognitionView.locale")
+        observingTitle = localizationService.localization(for: "commandRecognitionView.observing")
+        recognizedTextTitle = localizationService.localization(for: "commandRecognitionView.recognizedText")
     }
 }

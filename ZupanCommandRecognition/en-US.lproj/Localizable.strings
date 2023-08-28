@@ -14,3 +14,8 @@
 "commandRecognitionView.recognizedText" = "Recognized Text:";
 "commandRecognitionView.command" = "Command";
 "commandRecognitionView.parameters" = "Parameters";
+
+"command.code" = "Code";
+"command.count" = "Count";
+"command.back" = "Back";
+"command.reset" = "Reset";

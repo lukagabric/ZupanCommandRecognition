@@ -16,7 +16,7 @@ final class ZupanCommandRecognitionTests: XCTestCase {
         let input = "ignore1 test1 ignore2 test2 count 61 1 twelve three reset reset reset reset count one zwei 8 ten ignore4 code 12312 one zwei two sixty test4 code 0 1 2 3 4 5 6 7 8 9 count zero one two three four five six seven eight nine code 1 2 3 reset 1 3 2 count 1 count 2 reset reset back reset reset reset one two 1 2 code 8 7 5 reset code eight 7 six"
         
         let sut = CommandProcessor()
-        let result = sut.process(input: input, localeId: "en-US")
+        let result = sut.process(input: input, localizationService: DefaultLocalizationService(localeId: "en-US"))
 
         XCTAssertEqual(result.count, 5)
         XCTAssertEqual(result[0].commandType, .count)
@@ -36,9 +36,9 @@ final class ZupanCommandRecognitionTests: XCTestCase {
     }
     
     func testProcessingResultsInExpectedCommands_de_DE() {
-        let input = "ignore1 test1 ignore2 test2 count 61 1 zwölf drei reset reset reset reset count eins two 8 zehn ignore4 code 12312 eins two zwei sechzig test4 code 0 1 2 3 4 5 6 7 8 9 count null eins zwei drei vier fünf sechs sieben acht neun code 1 2 3 reset 1 3 2 count 1 count 2 reset reset back reset reset reset eins zwei 1 2 code 8 7 5 reset code acht 7 sechs"
+        let input = "ignore1 test1 ignore2 test2 zählen 61 1 zwölf drei zurücksetzen zurücksetzen zurücksetzen zurücksetzen zählen eins two 8 zehn ignore4 Code 12312 eins two zwei sechzig test4 Code 0 1 2 3 4 5 6 7 8 9 zählen null eins zwei drei vier fünf sechs sieben acht neun Code 1 2 3 zurücksetzen 1 3 2 zählen 1 zählen 2 zurücksetzen zurücksetzen zurück zurücksetzen zurücksetzen zurücksetzen eins zwei 1 2 Code 8 7 5 zurücksetzen Code acht 7 sechs"
         let sut = CommandProcessor()
-        let result = sut.process(input: input, localeId: "de-DE")
+        let result = sut.process(input: input, localizationService: DefaultLocalizationService(localeId: "de-DE"))
 
         XCTAssertEqual(result.count, 5)
         XCTAssertEqual(result[0].commandType, .count)
@@ -67,8 +67,8 @@ final class ZupanCommandRecognitionTests: XCTestCase {
             exp.fulfill()
         }.store(in: &cancellables)
 
-        _ = sut.process(input: input, localeId: "en-US")
-        
+        _ = sut.process(input: input, localizationService: DefaultLocalizationService(localeId: "en-US"))
+
         waitForExpectations(timeout: 1)
         
         XCTAssertEqual(state, .command)
@@ -87,8 +87,8 @@ final class ZupanCommandRecognitionTests: XCTestCase {
             }
         }.store(in: &cancellables)
 
-        _ = sut.process(input: input, localeId: "en-US")
-        
+        _ = sut.process(input: input, localizationService: DefaultLocalizationService(localeId: "en-US"))
+
         waitForExpectations(timeout: 1)
         
         XCTAssertEqual(states[0], .command)
@@ -98,14 +98,14 @@ final class ZupanCommandRecognitionTests: XCTestCase {
     func testThatMultipleBackCommandsLeadToAnEmptyCommandSet() {
         let input = "count 1 2 3 back back back back back back"
         let sut = CommandProcessor()
-        let results = sut.process(input: input, localeId: "en-US")
+        let results = sut.process(input: input, localizationService: DefaultLocalizationService(localeId: "en-US"))
         XCTAssertTrue(results.isEmpty)
     }
     
     func testCommandProcessingAfterManyBackCommands() {
         let input = "count 1 2 3 back back back back back back count 1 8 code 1 2"
         let sut = CommandProcessor()
-        let results = sut.process(input: input, localeId: "en-US")
+        let results = sut.process(input: input, localizationService: DefaultLocalizationService(localeId: "en-US"))
         
         XCTAssertEqual(results.count, 2)
         XCTAssertEqual(results[0].commandType, .count)

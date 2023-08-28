@@ -95,9 +95,10 @@ struct CommandRecognitionView: View {
 
 struct CommandRecognitionView_Previews: PreviewProvider {
     static var previews: some View {
-        let viewModel = SpeechRecognitionViewModel { locale in
-            try! FixedInputSpeechRecognizer(locale: locale)
-        }
+        let viewModel = SpeechRecognitionViewModel(
+            localizationServiceFactory: { DefaultLocalizationService(localeId: $0)},
+            speechRecognizerFactory: { try! FixedInputSpeechRecognizer(locale: $0) }
+        )
         return CommandRecognitionView(viewModel: viewModel)
     }
 }

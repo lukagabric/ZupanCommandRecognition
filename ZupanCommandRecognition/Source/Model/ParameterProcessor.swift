@@ -8,12 +8,12 @@
 import Foundation
 
 protocol ParameterProcessor {
-    func processParameter(_ input: String, localeId: String) -> Int?
+    func processParameter(_ input: String, localizationService: LocalizationService) -> Int?
 }
 
 struct CommandParameterProcessor: ParameterProcessor {
-    func processParameter(_ input: String, localeId: String) -> Int? {
-        parameter(from: input, localeId: localeId)
+    func processParameter(_ input: String, localizationService: LocalizationService) -> Int? {
+        parameter(from: input, localeId: localizationService.localeId)
     }
             
     private func parameter(from string: String, localeId: String) -> Int? {
@@ -41,7 +41,7 @@ struct CommandParameterProcessor: ParameterProcessor {
 }
 
 struct NoParameterProcessor: ParameterProcessor {
-    func processParameter(_ input: String, localeId: String) -> Int? {
+    func processParameter(_ input: String, localizationService: LocalizationService) -> Int? {
         nil
     }
 }

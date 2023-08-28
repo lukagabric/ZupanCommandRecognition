@@ -101,15 +101,24 @@ class IOSSpeechRecognizer: SpeechRecognizer {
 
 #if DEBUG
 class MockSpeechRecognizer: SpeechRecognizer {
-    required init(locale: Locale) throws {}
-    
     private var recognizedTextSubject = CurrentValueSubject<String, Never>("")
     var recognizedText: AnyPublisher<String, Never> { recognizedTextSubject.eraseToAnyPublisher() }
     
-    private var elements = "ignore1 test1 ignore2 test2 count 61 1 twelve three reset reset reset reset one zwei 8 ten ignore4 code 12312 one zwei two sixty test4 code 0 1 2 3 4 5 6 7 8 9 count zero one two three four five six seven eight nine code 1 2 3 reset 1 3 2 count 1 count 2 reset back reset back reset reset reset one two 1 2 code 8 7 5 reset eight 7 six"
-        .components(separatedBy: " ")
+    private var elements: [String]
     
-    
+    required init(locale: Locale) throws {
+        switch locale.identifier {
+        case "en-US":
+            elements = "ignore1 test1 ignore2 test2 count 61 1 twelve three reset reset reset reset one zwei 8 ten ignore4 code 12312 one zwei two sixty test4 code 0 1 2 3 4 5 6 7 8 9 count zero one two three four five six seven eight nine code 1 2 3 reset 1 3 2 count 1 count 2 reset back reset back reset reset reset one two 1 2 code 8 7 5 reset eight 7 six"
+                .components(separatedBy: " ")
+        case "de-DE":
+            elements = "ignore1 test1 ignore2 test2 zählen 61 1 zwölf drei zurücksetzen zurücksetzen zurücksetzen zurücksetzen zählen eins two 8 zehn ignore4 Code 12312 eins two zwei sechzig test4 Code 0 1 2 3 4 5 6 7 8 9 zählen null eins zwei drei vier fünf sechs sieben acht neun Code 1 2 3 zurücksetzen 1 3 2 zählen 1 zählen 2 zurücksetzen zurücksetzen zurück zurücksetzen zurücksetzen zurücksetzen eins zwei 1 2 Code 8 7 5 zurücksetzen Code acht 7 sechs"
+                .components(separatedBy: " ")
+        default:
+            fatalError("Unsupported locale")
+        }
+    }
+        
     private var timerCancellable: AnyCancellable?
     func start() async throws {
         let reportingFrequency: TimeInterval = 0.5
