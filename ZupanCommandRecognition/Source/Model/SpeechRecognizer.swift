@@ -131,7 +131,12 @@ class MockSpeechRecognizer: SpeechRecognizer {
     }
 }
 
-class PreviewsSpeechRecognizer: SpeechRecognizer {
+class FixedInputSpeechRecognizer: SpeechRecognizer {
+    convenience init(locale: Locale, mockInput: String) throws {
+        try self.init(locale: locale)
+        recognizedTextSubject.send(mockInput)
+    }
+    
     required init(locale: Locale) throws {}
     
     private var recognizedTextSubject = CurrentValueSubject<String, Never>("count 1 three code 8 7 5 count eight 7 six")

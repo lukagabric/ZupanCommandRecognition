@@ -25,7 +25,8 @@ struct CommandRecognitionView: View {
         VStack {
             headerView()
             List(viewModel.commandListItems, id: \.self) { item in
-                commandListItemView(commandListItem: item)
+                let index = viewModel.commandListItems.firstIndex(of: item) as Int? ?? 0
+                commandListItemView(commandListItem: item, index: index)
             }
         }
         .onAppear {
@@ -39,34 +40,55 @@ struct CommandRecognitionView: View {
                 viewModel.toggleLocale()
             }
             .padding(.init(top: 5, leading: 0, bottom: 5, trailing: 0))
-            horizontalText(title: viewModel.localeTitle, subtitle: viewModel.localeIdentifier)
-            horizontalText(title: viewModel.observingTitle, subtitle: viewModel.statusMessage)
-            verticalText(title: viewModel.recognizedTextTitle, subtitle: viewModel.recognizedText)
+            horizontalText(title: viewModel.localeTitle,
+                           titleAccessibilityIdentifier: "localeTitle",
+                           subtitle: viewModel.localeIdentifier,
+                           subtitleAccessibilityIdentifier: "localeSubtitle")
+            horizontalText(title: viewModel.observingTitle,
+                           titleAccessibilityIdentifier: "observingTitle",
+                           subtitle: viewModel.statusMessage,
+                           subtitleAccessibilityIdentifier: "observingSubtitle")
+            verticalText(title: viewModel.recognizedTextTitle,
+                         titleAccessibilityIdentifier: "recognizedTextTitle",
+                         subtitle: viewModel.recognizedText,
+                         subtitleAccessibilityIdentifier: "recognizedTextSubtitle")
         }
     }
     
-    private func horizontalText(title: String, subtitle: String) -> some View {
+    private func horizontalText(title: String,
+                                titleAccessibilityIdentifier: String,
+                                subtitle: String,
+                                subtitleAccessibilityIdentifier: String) -> some View {
         HStack {
             Text(title)
+                .accessibilityIdentifier(titleAccessibilityIdentifier)
             Text(subtitle)
                 .bold()
+                .accessibilityIdentifier(subtitleAccessibilityIdentifier)
         }.padding(.init(top: 0, leading: 0, bottom: 3, trailing: 0))
     }
     
-    private func verticalText(title: String, subtitle: String) -> some View {
+    private func verticalText(title: String,
+                              titleAccessibilityIdentifier: String,
+                              subtitle: String,
+                              subtitleAccessibilityIdentifier: String) -> some View {
         VStack {
             Text(title)
                 .font(.headline)
+                .accessibilityIdentifier(titleAccessibilityIdentifier)
             Text(subtitle)
                 .padding(.init(top: 0, leading: 0, bottom: 3, trailing: 0))
                 .font(.caption)
+                .accessibilityIdentifier(subtitleAccessibilityIdentifier)
         }
     }
     
-    private func commandListItemView(commandListItem: CommandListItem) -> some View {
+    private func commandListItemView(commandListItem: CommandListItem, index: Int) -> some View {
         VStack(alignment: .leading) {
             Text(commandListItem.commandTypeTitle)
+                .accessibilityIdentifier("commandTypeTitle_\(index)")
             Text(commandListItem.commandValue)
+                .accessibilityIdentifier("commandValue_\(index)")
         }
     }
 }
@@ -74,7 +96,7 @@ struct CommandRecognitionView: View {
 struct CommandRecognitionView_Previews: PreviewProvider {
     static var previews: some View {
         let viewModel = SpeechRecognitionViewModel { locale in
-            try! PreviewsSpeechRecognizer(locale: locale)
+            try! FixedInputSpeechRecognizer(locale: locale)
         }
         return CommandRecognitionView(viewModel: viewModel)
     }

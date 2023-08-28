@@ -94,4 +94,24 @@ final class ZupanCommandRecognitionTests: XCTestCase {
         XCTAssertEqual(states[0], .command)
         XCTAssertEqual(states[1], .parameters)
     }
+    
+    func testThatMultipleBackCommandsLeadToAnEmptyCommandSet() {
+        let input = "count 1 2 3 back back back back back back"
+        let sut = CommandProcessor()
+        let results = sut.process(input: input, localeId: "en-US")
+        XCTAssertTrue(results.isEmpty)
+    }
+    
+    func testCommandProcessingAfterManyBackCommands() {
+        let input = "count 1 2 3 back back back back back back count 1 8 code 1 2"
+        let sut = CommandProcessor()
+        let results = sut.process(input: input, localeId: "en-US")
+        
+        XCTAssertEqual(results.count, 2)
+        XCTAssertEqual(results[0].commandType, .count)
+        XCTAssertEqual(results[0].parameters, [1, 8])
+
+        XCTAssertEqual(results[1].commandType, .code)
+        XCTAssertEqual(results[1].parameters, [1, 2])
+    }
 }
